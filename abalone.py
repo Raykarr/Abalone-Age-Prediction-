@@ -11,8 +11,7 @@ from sklearn.metrics import (
     mean_squared_error,
     mean_absolute_error,
     r2_score,
-    # Uncomment the line below if scikit-learn >=1.4 has root_mean_squared_error
-    # root_mean_squared_error
+    
 )
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -220,31 +219,7 @@ with tab2:
                     labels={'Height':'Height (mm)'}, color='Sex', color_discrete_sequence=['#483D8B', '#6A5ACD', '#7B68EE'])
     st.plotly_chart(fig_box, use_container_width=True)
     
-    # Residual Plot
-    st.markdown("#### 🕵️ Residual Plot")
-    with st.spinner('Generating residual plot...'):
-        # To generate residuals, we need to train a temporary model
-        X_temp = df_encoded.drop('Rings', axis=1)
-        y_temp = df_encoded['Rings']
-        X_train_temp, X_test_temp, y_train_temp, y_test_temp = train_test_split(
-            X_temp, y_temp, test_size=0.2, random_state=42)
-        scaler_temp = MinMaxScaler()
-        X_train_scaled_temp = scaler_temp.fit_transform(X_train_temp)
-        X_test_scaled_temp = scaler_temp.transform(X_test_temp)
-        model_temp = KNeighborsRegressor(n_neighbors=5)  # Arbitrary k for visualization
-        model_temp.fit(X_train_scaled_temp, y_train_temp)
-        y_pred_temp = model_temp.predict(X_test_scaled_temp)
-        residuals = y_test_temp - y_pred_temp
-        try:
-            fig_residual = px.scatter(x=y_pred_temp, y=residuals, labels={'x':'Predicted Rings', 'y':'Residuals'},
-                                      title='Residuals vs Predicted Rings',
-                                      trendline="ols")
-            st.plotly_chart(fig_residual, use_container_width=True)
-        except ModuleNotFoundError:
-            st.warning("`statsmodels` is not installed. Residual plot without trendline.")
-            fig_residual = px.scatter(x=y_pred_temp, y=residuals, labels={'x':'Predicted Rings', 'y':'Residuals'},
-                                      title='Residuals vs Predicted Rings')
-            st.plotly_chart(fig_residual, use_container_width=True)
+    
 
 with tab3:
     st.subheader("🤖 Model Training and Evaluation")
@@ -262,6 +237,34 @@ with tab3:
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
     
+    # Update tooltips to display only once and make them bold
+    TOOLTIPS = {
+        "Optimal K": "**Optimal K**: The value of K in K-Nearest Neighbors that minimizes the Root Mean Squared Error (RMSE).",
+        "RMSE": "**RMSE**: Root Mean Squared Error, a measure of how well the model's predictions match the actual values. Lower RMSE indicates better performance.",
+        "MAE": "**MAE**: Mean Absolute Error, the average of the absolute differences between predicted and actual values. It measures prediction accuracy.",
+        "R²": "**R²**: R-squared, a statistical measure that indicates how well the regression predictions approximate the actual data points. Higher values are better.",
+        "Training Data": "**Training Data**: The portion of the dataset used to train the machine learning model.",
+        "Testing Data": "**Testing Data**: The portion of the dataset used to evaluate the model's performance on unseen data.",
+        "Scaling": "**Scaling**: A preprocessing step to normalize data to a specific range, often [0, 1], to improve model performance.",
+        "K-Nearest Neighbors": "**K-Nearest Neighbors**: A machine learning algorithm that predicts values based on the K closest data points in the feature space.",
+        "Correlation Heatmap": "**Correlation Heatmap**: A graphical representation of the correlation matrix, showing the strength and direction of relationships between variables.",
+        "Actual vs Predicted": "**Actual vs Predicted**: A comparison of the model's predictions against the actual values to evaluate its accuracy."
+    }
+
+    # Function to add tooltips to terms
+    @st.cache_data
+    def add_tooltip(term):
+        return f'<span title="{TOOLTIPS.get(term, term)}" style="text-decoration: underline; cursor: help; font-weight: bold;">{term}</span>'
+
+    # Update markdowns to display tooltips only once
+    st.markdown(f"**Training Data and Testing Data:** {add_tooltip('Training Data')} is used to train the model, while {add_tooltip('Testing Data')} evaluates its performance.", unsafe_allow_html=True)
+    st.markdown(f"**Scaling:** {add_tooltip('Scaling')} is applied to normalize the data.", unsafe_allow_html=True)
+    st.markdown(f"**K-Nearest Neighbors:** {add_tooltip('K-Nearest Neighbors')} is the algorithm used for regression.", unsafe_allow_html=True)
+    st.markdown(f"**Correlation Heatmap:** {add_tooltip('Correlation Heatmap')} visualizes relationships between variables.", unsafe_allow_html=True)
+    st.markdown(f"**Actual vs Predicted:** {add_tooltip('Actual vs Predicted')} evaluates model accuracy.", unsafe_allow_html=True)
+    st.markdown(f"**Optimal K:** {add_tooltip('Optimal K')} is determined to minimize RMSE.", unsafe_allow_html=True)
+    st.markdown(f"**RMSE, MAE, and R²:** {add_tooltip('RMSE')}, {add_tooltip('MAE')}, and {add_tooltip('R²')} are metrics used to evaluate model performance.", unsafe_allow_html=True)
+
     # Finding the optimal k
     st.markdown("##### 🔍 Finding the Optimal K")
     rmse_val = []
@@ -286,7 +289,7 @@ with tab3:
     best_mae = mae_val[rmse_val.index(best_rmse)]
     best_r2 = r2_val[rmse_val.index(best_rmse)]
     
-    st.markdown(f"**Optimal K:** {best_k} with **RMSE:** {best_rmse:.2f}, **MAE:** {best_mae:.2f}, **R² Score:** {best_r2:.2f}")
+    st.markdown(f"{add_tooltip('Optimal K')} with{add_tooltip('RMSE')} = {best_rmse:.2f},{add_tooltip('MAE')} = {best_mae:.2f},{add_tooltip('R²')} = {best_r2:.2f}", unsafe_allow_html=True)
     
     # Plotting Evaluation Metrics vs K
     st.markdown("##### 📉 Evaluation Metrics vs Number of Neighbors (K)")
@@ -373,8 +376,7 @@ with tab4:
     
     # Display Prediction
     st.markdown("### 🎯 Predicted Age")
-    st.success(f"The predicted age of the abalone is **{age:.2f} years** (Number of Rings: {prediction:.2f}).")
-    
+    st.success(f"The predicted age of the abalone is **{round(age):.0f} years** (Number of Rings: {prediction:.2f})")
     # Additional Visualizations: Predicted Rings
     st.markdown("#### 📈 Prediction Details")
     fig_pred = px.bar(x=['Predicted Rings'], y=[prediction], 
