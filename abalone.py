@@ -257,13 +257,13 @@ with tab3:
         return f'<span title="{TOOLTIPS.get(term, term)}" style="text-decoration: underline; cursor: help; font-weight: bold;">{term}</span>'
 
     # Update markdowns to display tooltips only once
-    st.markdown(f"**Training Data and Testing Data:** {add_tooltip('Training Data')} is used to train the model, while {add_tooltip('Testing Data')} evaluates its performance.", unsafe_allow_html=True)
-    st.markdown(f"**Scaling:** {add_tooltip('Scaling')} is applied to normalize the data.", unsafe_allow_html=True)
-    st.markdown(f"**K-Nearest Neighbors:** {add_tooltip('K-Nearest Neighbors')} is the algorithm used for regression.", unsafe_allow_html=True)
-    st.markdown(f"**Correlation Heatmap:** {add_tooltip('Correlation Heatmap')} visualizes relationships between variables.", unsafe_allow_html=True)
-    st.markdown(f"**Actual vs Predicted:** {add_tooltip('Actual vs Predicted')} evaluates model accuracy.", unsafe_allow_html=True)
-    st.markdown(f"**Optimal K:** {add_tooltip('Optimal K')} is determined to minimize RMSE.", unsafe_allow_html=True)
-    st.markdown(f"**RMSE, MAE, and R²:** {add_tooltip('RMSE')}, {add_tooltip('MAE')}, and {add_tooltip('R²')} are metrics used to evaluate model performance.", unsafe_allow_html=True)
+    st.markdown(f"{add_tooltip('Training Data')} is used to train the model, while {add_tooltip('Testing Data')} evaluates its performance.", unsafe_allow_html=True)
+    st.markdown(f"{add_tooltip('Scaling')} is applied to normalize the data.", unsafe_allow_html=True)
+    st.markdown(f"{add_tooltip('K-Nearest Neighbors')} is the algorithm used for regression.", unsafe_allow_html=True)
+    st.markdown(f"{add_tooltip('Correlation Heatmap')} visualizes relationships between variables.", unsafe_allow_html=True)
+    st.markdown(f"{add_tooltip('Actual vs Predicted')} evaluates model accuracy.", unsafe_allow_html=True)
+    st.markdown(f"{add_tooltip('Optimal K')} is determined to minimize RMSE.", unsafe_allow_html=True)
+    st.markdown(f"{add_tooltip('RMSE')}, {add_tooltip('MAE')}, and {add_tooltip('R²')} are metrics used to evaluate model performance.", unsafe_allow_html=True)
 
     # Finding the optimal k
     st.markdown("##### 🔍 Finding the Optimal K")
